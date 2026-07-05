@@ -117,8 +117,37 @@ app.post("/quiz", async (req, res) => {
     });
   }
 });
-app.post("/setup", (req, res) => {
+
+app.post("/setup", async (req, res) => {
+
   agentSettings = req.body;
+  try {
+  const lesson = await askGemini(`
+Generate today's learning lesson.
+
+Task:
+${agentSettings.task}
+
+Topic:
+${agentSettings.topic}
+
+Keywords:
+${agentSettings.keywords}
+
+Make today's lesson practical and useful.
+`);
+
+  await transporter.sendMail({
+    from: process.env.GMAIL_USER,
+    to: agentSettings.email,
+    subject: `📚 Daily AI Lesson - ${agentSettings.topic}`,
+    text: lesson,
+  });
+
+  console.log("📧 First email sent successfully!");
+} catch (err) {
+  console.error("Email Error:", err);
+}
 
   console.log("✅ Agent Setup Saved:");
   console.log(agentSettings);
