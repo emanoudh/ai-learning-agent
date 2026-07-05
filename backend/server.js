@@ -26,12 +26,33 @@ app.get("/", (req, res) => {
 let agentSettings = null;
 let lastAutomatedRunDate = null;
 async function askGemini(prompt) {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
+  const MAX_RETRIES = 3;
 
-  return response.text;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: prompt,
+      });
+
+      return response.text;
+    } catch (error) {
+      console.error(`Gemini Error (Attempt ${attempt}):`, error.message);
+
+      const status =
+        error?.status ||
+        error?.error?.code ||
+        error?.response?.status;
+
+      if ((status === 503 || status === 429) && attempt < MAX_RETRIES) {
+        console.log("Retrying in 5 seconds...");
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        continue;
+      }
+
+      throw error;
+    }
+  }
 }
 
 app.post("/chat", async (req, res) => {
