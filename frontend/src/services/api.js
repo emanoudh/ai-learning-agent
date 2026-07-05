@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:5000";
+const API = "https://ai-learning-agent-cs7c.onrender.com";
 
 export async function sendMessage(message) {
   const res = await fetch(`${API}/chat`, {
