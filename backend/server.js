@@ -31,7 +31,7 @@ async function askGemini(prompt) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
+       model: "gemini-2.5-flash",
         contents: prompt,
       });
 
@@ -61,7 +61,7 @@ app.post("/chat", async (req, res) => {
     console.log("وصل الطلب إلى Gemini");
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: userMessage,
     });
 
