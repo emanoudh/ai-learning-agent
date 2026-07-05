@@ -20,6 +20,9 @@ const transporter = nodemailer.createTransport({
 
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.send("AI Daily Learning Agent Backend is running ✅");
+});
 let agentSettings = null;
 let lastAutomatedRunDate = null;
 async function askGemini(prompt) {
