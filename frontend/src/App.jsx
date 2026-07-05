@@ -106,27 +106,34 @@ return () => {
   }}
 />
         <button
-        onClick={async () => {
+    onClick={async () => {
+  try {
+    alert("Please wait... starting agent");
 
-  await saveSetup({
-    userName,
-    task,
-    keywords,
-    topic,
-    email,
-    dailyTime,
-  });
-  console.log("Setup sent successfully");
+    await saveSetup({
+      userName,
+      task,
+      keywords,
+      topic,
+      email,
+      dailyTime,
+    });
 
-  localStorage.setItem("userName", userName);
-  localStorage.setItem("task", task);
-  localStorage.setItem("keywords", keywords);
-  localStorage.setItem("topic", topic);
-  localStorage.setItem("email", email);
-  localStorage.setItem("dailyTime", dailyTime);
+    console.log("Setup sent successfully");
 
-  localStorage.setItem("isSetupDone", "true");
-  setIsSetupDone(true);
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("task", task);
+    localStorage.setItem("keywords", keywords);
+    localStorage.setItem("topic", topic);
+    localStorage.setItem("email", email);
+    localStorage.setItem("dailyTime", dailyTime);
+    localStorage.setItem("isSetupDone", "true");
+
+    setIsSetupDone(true);
+  } catch (error) {
+    console.error(error);
+    alert("Server is waking up. Please wait 1 minute and try again.");
+  }
 }}
         >
           Start Agent
