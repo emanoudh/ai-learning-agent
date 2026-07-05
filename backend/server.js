@@ -146,7 +146,8 @@ Make today's lesson practical and useful.
 
   console.log("📧 First email sent successfully!");
 } catch (err) {
-  console.error("Email Error:", err);
+ console.error("Email Error:", err);
+console.error(err.stack);
 }
 
   console.log("✅ Agent Setup Saved:");
