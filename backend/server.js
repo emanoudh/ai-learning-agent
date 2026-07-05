@@ -141,8 +141,16 @@ cron.schedule("* * * * *", async () => {
 
   const now = new Date();
 
-  const currentTime = now.toTimeString().slice(0, 5);
-  const today = now.toDateString();
+const currentTime = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Asia/Amman",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+}).format(now);
+
+const today = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Amman",
+}).format(now);
 
  if (
   currentTime === agentSettings.dailyTime &&
