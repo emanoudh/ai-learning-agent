@@ -152,7 +152,10 @@ const today = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Amman",
 }).format(now);
 
- if (
+console.log("Current Jordan Time:", currentTime);
+console.log("Saved Time:", agentSettings?.dailyTime);
+
+if (
   currentTime === agentSettings.dailyTime &&
   lastAutomatedRunDate !== today
 ) {
