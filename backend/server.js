@@ -32,7 +32,7 @@ async function askGemini(prompt) {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       const response = await ai.models.generateContent({
-       model: "gemini-2.5-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
       });
 
@@ -47,13 +47,40 @@ async function askGemini(prompt) {
 
       if ((status === 503 || status === 429) && attempt < MAX_RETRIES) {
         console.log("Retrying in 5 seconds...");
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise((resolve) => setTimeout(resolve, 5000));
         continue;
       }
 
       throw error;
     }
   }
+}
+
+async function sendEmail(to, subject, text) {
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "api-key": process.env.BREVO_API_KEY,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: {
+        name: "AI Daily Learning Agent",
+        email: process.env.GMAIL_USER,
+      },
+      to: [{ email: to }],
+      subject: subject,
+      textContent: text,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  console.log("✅ Email sent successfully!");
 }
 
 app.post("/chat", async (req, res) => {
@@ -138,12 +165,11 @@ ${agentSettings.keywords}
 Make today's lesson practical and useful.
 `);
 
-  await transporter.sendMail({
-    from: process.env.GMAIL_USER,
-    to: agentSettings.email,
-    subject: `📚 Daily AI Lesson - ${agentSettings.topic}`,
-    text: lesson,
-  });
+await sendEmail(
+  agentSettings.email,
+  `📚 Daily AI Lesson - ${agentSettings.topic}`,
+  lesson
+);
 
   console.log("📧 First email sent successfully!");
 } catch (err) {
@@ -213,12 +239,11 @@ Make today's lesson different from yesterday.
 console.log("✅ Lesson Generated");
 console.log(lesson);
 
-await transporter.sendMail({
-  from: process.env.GMAIL_USER,
-  to: agentSettings.email,
-  subject: `📚 Daily AI Lesson - ${agentSettings.topic}`,
-  text: lesson,
-});
+await sendEmail(
+  agentSettings.email,
+  `📚 Daily AI Lesson - ${agentSettings.topic}`,
+  lesson
+);
 
 console.log("📧 Email sent successfully!");
 
